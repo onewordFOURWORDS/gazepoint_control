@@ -1,5 +1,6 @@
 import socket
 import numpy as np
+import re
 
 # Host machine IP/IP address of Windows VM
 host = "192.168.56.101"
@@ -18,7 +19,12 @@ s.send(str.encode('<SET ID="ENABLE_SEND_DATA" STATE="1" />\r\n'))
 
 for i in range(5):
         s.recv(1024)
+
+# Regex that only includes numbers and .
+numbers = re.compile(r'\d+(?:\.\d+)?')
+
 while 1:
+    newlist = []
     rxdat = s.recv(1024)  # Receive data from server
     rxdat = bytes.decode(rxdat)
 
@@ -33,4 +39,8 @@ while 1:
     # make array vertical + converts into 2d array
     rxdat = rxdat.reshape(-1, 1)
 
-    print(rxdat)
+    # Converts to pure float values and appends to newlist
+    for i in range(len(rxdat)):
+        temp = (numbers.findall(rxdat[i][0]))
+        temp = float(temp[0])
+        newlist.append(temp)
